@@ -1,30 +1,14 @@
-import os
-import shutil
-import argparse as arg
-import subprocess
-
-label_name = "nome"
-num_atoms = 10
-num_species = 2
-move_cell = "True"
-dipole_correction = "True"
-spin_type = "polarized"
-k_point = 4
-
-fdf_file = label_name + ".fdf"
-
-with open(fdf_file, 'w') as f:
-    f.write(f"""####################Label of System#################### 
+####################Label of System#################### 
              
-SystemName {label_name}     
-SystemLabel {label_name}
+SystemName nome     
+SystemLabel nome
 
 #######################################################
 
 ####################Input Parameters####################        
 
-NumberOfAtoms {num_atoms}
-NumberOfSpecies {num_species}
+NumberOfAtoms 10
+NumberOfSpecies 2
 
 %block ChemicalSpeciesLabel     
 # Atomic_Index Atomic_Number Atomic_Symbol
@@ -51,7 +35,7 @@ AtomCoorFormatOut Ang
 AtomicCoordinatesOrigin 0.0 0.0 0.0
 
 #Type of movement for the unitary cell: True (Cell can move), False (Cell is fixed)
-MD.VariableCell {move_cell}
+MD.VariableCell True
 
 #Constrain atoms or/and cell-vectors:
 %block Geometry.Constraints
@@ -61,6 +45,10 @@ MD.VariableCell {move_cell}
 # 3- Constrain the movement of one atom in the z-direction: atom 1 0. 0. 1.
 
 %endblock Geometry.Constraints
+
+#Type of dipole correction: True (Dipole correction on), False (Dipole correction off)
+#Use this in case of adsorption
+Slab.DipoleCorrection True  
 
 #Cell vectors of the system
 LatticeConstant 1.00 Ang
@@ -79,28 +67,5 @@ LatticeConstant 1.00 Ang
 
 ####################Theoretical Informations####################
 
-#Exchange-Correlation functional
-XC.Functional GGA 
-#Author of the Exchange-Correlation functional
-XC.Authors PBE
-
-#Type of basis set
-PAO.BasisSize DZP
-
-#Type of dipole correction: True (Dipole correction on), False (Dipole correction off)
-#Use this in case of adsorption
-Slab.DipoleCorrection {dipole_correction}  
-
-#Type of spin polarization: non-polarized, polarized, non-collinear, spin-orbit. (Read Manual for more details)
-Spin {spin_type}
-#Colocar o resto de spin
-
-#Monkhorst-Pack k-point sampling
-%block kgrid_Monkhorst_Pack     
-#Last value related to the k point value :0.5 (odd) or 0.0 (even)
-{k_point} 0 0 0.5   
-0 {k_point} 0 0.5   
-0 0 1 0.0   
-%endblock kgrid_Monkhorst_Pack  
 ################################################################
-    """)
+    
