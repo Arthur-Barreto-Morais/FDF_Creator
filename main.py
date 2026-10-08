@@ -41,6 +41,8 @@ args = parser.parse_args()
 label_name = args.label
 fdf_file = label_name + ".fdf"
 
+type = args.type
+
 with open(fdf_file, 'w') as f:
     f.write(f"""####################Label of System#################### 
              
@@ -123,6 +125,29 @@ LatticeConstant 1.00 Ang
 %endblock AtomicCoordinatesAndAtomicSpecies
 
 ###############################################################"""+"\n"+"\n")
+
+    if type == "bands":
+        f.write(f"""####################Bands and DOS Informations####################
+
+#
+BandLinesScale ReciprocalLatticeVectors
+
+#
+%block BandLines
+#
+1    0.000 0.000 0.000 G
+200   0.000 0.500 0.000 M
+200   0.333 0.666 0.000 K
+200   0.000 0.000 0.000 G
+%endblock BandLines
+
+#
+%block ProjectedDensityOfStates
+#
+ -10.00 10.00 0.0500 10000 eV 
+%endblock ProjectedDensityOfStates
+
+##################################################################"""+"\n"+"\n")
 
     basis_size = args.basis_size
 
@@ -254,58 +279,58 @@ UseSaveData false
 #All informations about the output can be obtained in the manual.
 
 #Increase the output informations
-LongOutput true
+LongOutput True
 
 ------------------------Structure and Coordinates------------------------
 
 #Write the {label_name}.xyz file
-WriteCoor.Xmol true
+WriteCoor.Xmol True
 
 #Write the {label_name}.xtl file (Fractional Format)
-WriteCoorCerius true
+WriteCoorCerius True
 
 #Write the MD animation, {label_name}.ANI file
-WriteMDXmol true
+WriteMDXmol True
 
 #Write the initial structure in the output file
-WriteCoorInitial true
+WriteCoorInitial True
 
-#Write the structure at each step, {label_name}.Remember file
-WriteCoorStep true
+#Write the structure at each step in the output file
+WriteCoorStep True
 
 #Write all Molecular Dynamics (MD) informations:
 # {label_name}.MD and {label_name}.MDE files
-WriteMDHistory true
+WriteMDHistory {"True" if type == "opt" else "False"}
 
 ------------------------Forces and Orbitals------------------------
 
 #Write the atomic forces, {label_name}.FA file
-WriteForces true
+WriteForces True
 
 #Write all the orbitals used in the calculation. {label_name}.ORB.INDX file
-Write.OrbitalIndex false
+Write.OrbitalIndex False
 
 #Write some orbital informations in the output file
-WriteOrbMom false
+WriteOrbMom False
 
 ------------------------Hamiltonian and Density Matrix (DM)------------------------
 
 #Write the DM, {label_name}.DM file
-Write.DM true
+Write.DM True
 
 #Write the Hamiltonian and Overlap Matrices (HS), {label_name}.HSX file - Must be true for Bands and DOS calculations?
-SaveHS false
+SaveHS {"True" if type == "bands" else "False"}
 
 ------------------------Eigenvalues, Bands and Wavefunctions------------------------
 
 #Write the Hamiltonian bands eigenvalues, {label_name}.bands file - Must be true for Bands calculations
-WriteBands false
+WriteBands {"True" if type == "bands" else "False"}
 
 #Write the Hamiltonian eigenvalues, {label_name}.EIG file - Must be true for DOS accounts calculations
-WriteEigenvalues false
+WriteEigenvalues {"True" if type == "bands" else "False"}
 
 #Write the Wavefunctions, {label_name}.WFSX file
-WriteWaveFunctions false
+WriteWaveFunctions {"True" if type == "bands" else "False"}
 
 ------------------------Electronic Populations------------------------
 
@@ -313,14 +338,14 @@ WriteWaveFunctions false
 WriteMullikenPop 1
 
 #Write Hirshfeld population
-Write.HirshfeldPop true
+Write.HirshfeldPop True
 
 #Write Voronoi population
-Write.VoronoiPop false
+Write.VoronoiPop True
 
 #Write the Crystal Orbital Overlap Population (COOP)/ Crystal Orbital Hamiltonian Population (COHP) informations:
 #{label_name}.fullBZ.WFSX and {label_name}.HSX files
-COOP.Write false
+COOP.Write False
 
 ------------------------Others Write Options------------------------
 
