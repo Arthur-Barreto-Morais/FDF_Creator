@@ -26,7 +26,7 @@ input = parser.add_argument_group("Important Configurations")
 
 input.add_argument("-t", dest = "type", type = str, required = False, metavar = "TYPE", choices = ["opt","bands","phonons","dynamic"], help = "Some Pattern Configurations")
 input.add_argument("-n", dest = "num_atoms", type = int, required = False, help = "Number of Atoms")
-input.add_argument("-run", dest = "run_type", type = str, required = False, metavar = "RUN_TYPE", default = "CG", choices = ["CG", "Broyden", "FIRE", "Verlet", "Nose", "FC"], help = "Types of Run")
+input.add_argument("-run", dest = "run_type", type = str, required = False, metavar = "RUN_TYPE", default = "CG", choices = ["CG", "Broyden", "FIRE", "Nose", "FC"], help = "Types of Run")
 input.add_argument("-el", dest = "elements", nargs ="+", required = False, metavar = "ELEMENT", help = "Elements (In order)")
 
 theoretical = parser.add_argument_group("Theoretical Configurations")
@@ -52,6 +52,11 @@ simple = parser.add_argument_group("Simple Configurations")
 simple.add_argument("-Fin", dest = "Fin", type = str, required = False, metavar = "FORMAT IN", default = "Ang", choices = ["Ang", "Fractional"], help = "Input Coordinate Format")
 simple.add_argument("-Fout", dest = "Fout", type = str, required = False, metavar = "FORMAT OUT", default = "Ang", choices = ["Ang", "Fractional"], help = "Output Coordinate Format")
 simple.add_argument("-steps", dest = "steps", type = int, required = False, default = 500, help = "Number of Steps in MD")
+
+dynamic = parser.add_argument_group("Dynamic Configurations")
+
+dynamic.add_argument("-Tin", dest = "temperature_initial", type = int, required = False, default = 300, help = "Initial Temperature of Dynamic Simulation")
+dynamic.add_argument("-Tgt", dest = "temperature_target", type = int, required = False, default = 300, help = "Target Temperature of Dynamic Simulation")
 
 args = parser.parse_args()
 
@@ -114,7 +119,7 @@ AtomCoorFormatOut {format_out}
 AtomicCoordinatesOrigin 0.0 0.0 0.0
 
 #Type of movement for the unitary cell: True (Cell can move), False (Cell is fixed)
-MD.VariableCell {cell_move if not type == "bands" else "False"}
+MD.VariableCell {cell_move if not type == "bands" or not type == "dynamic" else "False"}
 
 #Pensar nesse
 MD.RelaxCellOnly false
@@ -252,8 +257,29 @@ SCF.DM.Tolerance {scf_crit}
     run_type = args.run_type
     steps = args.steps
     md_crit = args.md_crit
+    temperature_initial = args.temperature_initial
+    temperature_target = args.temperature_target
 
-    f.write(f"""####################MD Informations####################
+    if type == "dynamic":
+        f.write(f"""####################MD Informations####################
+
+#MD - Molecular Dynamics
+
+#Choice of the type of calculation, see the manual for more information
+MD.TypeOfRun {"Nose" if args.run_type is not None else run_type}
+
+#
+MD.Steps {10000 if args.steps is not None else steps}
+MD.InitialTimeStep
+MD.LengthTimeStep 1.0 fs
+MD.InitialTemperature {temperature_initial} K
+MD.TargetTemperature {temperature_target} K
+MD.NoseMass 100 Ry*fs**2
+
+
+#######################################################"""+"\n"+"\n")        
+    else:
+        f.write(f"""####################MD Informations####################
 
 #MD - Molecular Dynamics
 
@@ -323,7 +349,7 @@ WriteCoorStep True
 
 #Write all Molecular Dynamics (MD) informations:
 # {label_name}.MD and {label_name}.MDE files
-WriteMDHistory {"True" if type == "opt" else "False"}
+WriteMDHistory {"True" if type == "opt" or type == "dynamic" else "False"}
 
 ------------------------Forces and Orbitals------------------------
 
