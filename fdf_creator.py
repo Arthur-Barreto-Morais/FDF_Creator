@@ -119,8 +119,10 @@ NumberOfSpecies {num_species}
 
 #Format of the atomic coordinates input: Ang (Angstroms), Fractional (Fractional coordinates)
 AtomicCoordinatesFormat {format_in}
+
 #Format of the atomic coordinates output: Ang (Angstroms), Fractional (Fractional coordinates)
 AtomCoorFormatOut {format_out}
+
 #Atomic origin of the system.
 AtomicCoordinatesOrigin 0.0 0.0 0.0
 
@@ -391,6 +393,11 @@ WriteEigenvalues {"True" if type == "bands" else "False"}
 #Write the Wavefunctions, {label_name}.WFSX file
 WriteWaveFunctions {"True" if type == "bands" else "False"}
 
+#Write the Kpoints related to the calculation in the output file.
+WriteKpoints false
+
+#Write the Kpoints related to the bands calculation in the output file.
+WriteKBands false
 ------------------------Electronic Populations------------------------
 
 #Write Mulliken population, values can be 0, 1, 2 or 3 (see manual)
@@ -409,12 +416,10 @@ COOP.Write False
 ------------------------Others Write Options------------------------
 
 #Write.Graphviz
-#WriteKpoints 
 #Write.DM.end.of.cycle
 #Write.H 
 #Write.H.end.of.cycle
 #Write.HS.History
-#WriteKBands
 
 #WFS.Write.For.Bands
 
