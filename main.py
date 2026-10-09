@@ -26,37 +26,37 @@ input = parser.add_argument_group("Important Configurations")
 
 input.add_argument("-t", dest = "type", type = str, required = False, metavar = "TYPE", choices = ["opt","bands","phonons","dynamic"], help = "Some Pattern Configurations")
 input.add_argument("-n", dest = "num_atoms", type = int, required = False, help = "Number of Atoms")
-input.add_argument("-run", dest = "run_type", type = str, required = False, metavar = "RUN_TYPE", default = "CG", choices = ["CG", "Broyden", "FIRE", "Nose", "FC"], help = "Types of Run")
+input.add_argument("-run", dest = "run_type", type = str, required = False, metavar = "RUN_TYPE", default = "CG", choices = ["CG", "Broyden", "FIRE", "Nose", "FC"], help = "Types of Run - Defalt (CG)")
 input.add_argument("-el", dest = "elements", nargs ="+", required = False, metavar = "ELEMENT", help = "Elements (In order)")
 
 theoretical = parser.add_argument_group("Theoretical Configurations")
 
-theoretical.add_argument("-bs", dest = "basis_size", type = str, required = False, default = "DZP", help = "Basis Size")
-theoretical.add_argument("-s", dest = "spin_type", type = str, required = False, metavar = "SPIN_TYPE", default = "non-polarized", choices = ["non-polarized", "polarized"], help = "Type of Polarization")
-theoretical.add_argument("-mesh", dest = "mesh_cutoff", type = float, required = False, default = 400.0, help = "Mesh Cutoff Value (Ry)")
-theoretical.add_argument("-cm", dest = "cell_move", type = str, required = False, metavar = "CELL_MOVE", default = "True", choices = ["True", "False"], help = "Enable Cell Movement")
+theoretical.add_argument("-bs", dest = "basis_size", type = str, required = False, default = "DZP", help = "Basis Size - Defalt (DZP)")
+theoretical.add_argument("-s", dest = "spin_type", type = str, required = False, metavar = "SPIN_TYPE", default = "non-polarized", choices = ["non-polarized", "polarized"], help = "Type of Polarization - Defalt (non-polarized)")
+theoretical.add_argument("-mesh", dest = "mesh_cutoff", type = float, required = False, default = 400.0, help = "Mesh Cutoff Value (Ry) - Defalt (400.0)")
+theoretical.add_argument("-cm", dest = "cell_move", type = str, required = False, metavar = "CELL_MOVE", default = "True", choices = ["True", "False"], help = "Enable Cell Movement - Defalt (True)")
 
 stored = parser.add_argument_group("Stored Configurations")
 
-stored.add_argument("-d3", dest = "Grimme_D3", required = False, action = "store_true", help = "Enable Grimme D3(BJ) dispersion corrections")
-stored.add_argument("-no_sv", dest = "save_dm", required = False, action = "store_false", help = "Do not save density matrix")
-stored.add_argument("-dc", dest = "dipole_correction", required = False, action = "store_true", help = "Enable slab dipole correction")
+stored.add_argument("-d3", dest = "Grimme_D3", required = False, action = "store_true", help = "Enable Grimme D3(BJ) dispersion corrections - Defalt (False)")
+stored.add_argument("-no_sv", dest = "save_dm", required = False, action = "store_false", help = "Do not save density matrix - Defalt (True) (Save.DM True)")
+stored.add_argument("-dc", dest = "dipole_correction", required = False, action = "store_true", help = "Enable slab dipole correction - Defalt (False)")
 
 criteria = parser.add_argument_group("Criteria Configurations")
 
-criteria.add_argument("-scf", dest = "scf_crit", type = float, required = False, default = 0.000001, help = "Criteria of SCF")
-criteria.add_argument("-md", dest = "md_crit", type = float, required = False, default = 0.01, help = "Criteria of MD")
+criteria.add_argument("-scf", dest = "scf_crit", type = float, required = False, default = 0.000001, help = "Criteria of SCF - Defalt (0.000001)")
+criteria.add_argument("-md", dest = "md_crit", type = float, required = False, default = 0.01, help = "Criteria of MD - Defalt (0.01)")
 
 simple = parser.add_argument_group("Simple Configurations")
 
-simple.add_argument("-Fin", dest = "Fin", type = str, required = False, metavar = "FORMAT IN", default = "Ang", choices = ["Ang", "Fractional"], help = "Input Coordinate Format")
-simple.add_argument("-Fout", dest = "Fout", type = str, required = False, metavar = "FORMAT OUT", default = "Ang", choices = ["Ang", "Fractional"], help = "Output Coordinate Format")
-simple.add_argument("-steps", dest = "steps", type = int, required = False, default = 500, help = "Number of Steps in MD")
+simple.add_argument("-Fin", dest = "Fin", type = str, required = False, metavar = "FORMAT IN", default = "Ang", choices = ["Ang", "Fractional"], help = "Input Coordinate Format - Defalt (Ang)")
+simple.add_argument("-Fout", dest = "Fout", type = str, required = False, metavar = "FORMAT OUT", default = "Ang", choices = ["Ang", "Fractional"], help = "Output Coordinate Format - Defalt (Ang)")
+simple.add_argument("-steps", dest = "steps", type = int, required = False, default = 500, help = "Number of Steps in MD - Defalt (500)")
 
 dynamic = parser.add_argument_group("Dynamic Configurations")
 
-dynamic.add_argument("-Tin", dest = "temperature_initial", type = int, required = False, default = 300, help = "Initial Temperature of Dynamic Simulation")
-dynamic.add_argument("-Tgt", dest = "temperature_target", type = int, required = False, default = 300, help = "Target Temperature of Dynamic Simulation")
+dynamic.add_argument("-Tin", dest = "temperature_initial", type = int, required = False, default = 300, help = "Initial Temperature of Dynamic Simulation - Defalt (300)")
+dynamic.add_argument("-Tgt", dest = "temperature_target", type = int, required = False, default = 300, help = "Target Temperature of Dynamic Simulation - Defalt (300)")
 
 args = parser.parse_args()
 
