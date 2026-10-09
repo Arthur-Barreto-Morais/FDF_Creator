@@ -39,7 +39,8 @@ theoretical.add_argument("-cm", dest = "cell_move", type = str, required = False
 stored = parser.add_argument_group("Stored Configurations")
 
 stored.add_argument("-d3", dest = "Grimme_D3", required = False, action = "store_true", help = "Enable Grimme D3(BJ) dispersion corrections - Defalt (False)")
-stored.add_argument("-no_sv", dest = "save_dm", required = False, action = "store_false", help = "Do not save density matrix - Defalt (True) (Save.DM True)")
+stored.add_argument("-no_sv", dest = "save_dm", required = False, action = "store_false", help = "Do not use saved density matrix - Defalt (True) (DM.UseSaveDM True)")
+stored.add_argument("-xv", dest = "save_xv", required = False, action = "store_true", help = "Enable use saved XV file - Defalt (False) (MD.UseSaveXV False)")
 stored.add_argument("-dc", dest = "dipole_correction", required = False, action = "store_true", help = "Enable slab dipole correction - Defalt (False)")
 
 criteria = parser.add_argument_group("Criteria Configurations")
@@ -173,6 +174,7 @@ BandLinesScale ReciprocalLatticeVectors
 %block LocalDensityOfStates
 #Min_Energy Max_Energy Unit
 # Example: EF -2.0 2.0 eV
+
 %endblock LocalDensityOfStates
 
 ##################################################################"""+"\n"+"\n")
@@ -261,12 +263,13 @@ SCF.DM.Tolerance {scf_crit}
     temperature_target = args.temperature_target
 
     if type == "dynamic":
+        run_type = "Nose"
         f.write(f"""####################MD Informations####################
 
 #MD - Molecular Dynamics
 
 #Choice of the type of calculation, see the manual for more information
-MD.TypeOfRun {"Nose" if args.run_type is not None else run_type}
+MD.TypeOfRun {run_type}
 
 #
 MD.Steps {10000 if args.steps is not None else steps}
@@ -306,11 +309,12 @@ DFTD3.BJdamping {grimme}
 ###############################################################"""+"\n"+"\n")
 
     save_dm = str(args.save_dm) if args.save_dm is not None else "True"
+    save_xv = str(args.save_xv) if args.save_xv is not None else "False"
 
     f.write(f"""####################Re-Run Output Informations####################
 
 #
-MD.UseSaveXV false
+MD.UseSaveXV {save_xv}
 
 #
 DM.UseSaveDM {save_dm}
