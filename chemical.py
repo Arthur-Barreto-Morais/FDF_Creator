@@ -24,7 +24,7 @@ def Obtain(fdf_file):
                 Species[symbol] = {"Number": int(number), "Z": int(Z)}
     return Species
 
-def psml_find(fdf_file,dir):
+def psml_find(fdf_file,dir,path_psml):
     file_path = os.path.join(os.getcwd(), fdf_file)
     elements = []
 
@@ -47,7 +47,7 @@ def psml_find(fdf_file,dir):
             if in_block:
                 elements.append(info.strip().split()[-1])
 
-    dir_psml = os.path.expanduser("~/Siesta_Standart_psml/Scalar_Relativistic/")
+    dir_psml = os.path.expanduser(path_psml)
 
     for element in elements:
 
