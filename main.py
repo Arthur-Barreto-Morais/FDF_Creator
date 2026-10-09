@@ -17,6 +17,8 @@ parser = arg.ArgumentParser(prog = "FDF_Creator", formatter_class = arg.RawDescr
     -l Label -k K_Point -t band -s polarized
     """)
 
+#######################################################################################################################################################################
+
 required = parser.add_argument_group("Required Configurations")
 
 required.add_argument("-l", dest = "label", type = str, required = True, help = "Label of file")
@@ -60,6 +62,8 @@ dynamic.add_argument("-Tin", dest = "temperature_initial", type = int, required 
 dynamic.add_argument("-Tgt", dest = "temperature_target", type = int, required = False, default = 300, help = "Target Temperature of Dynamic Simulation - Defalt (300)")
 
 args = parser.parse_args()
+
+#######################################################################################################################################################################
 
 label_name = args.label
 fdf_file = label_name + ".fdf"
