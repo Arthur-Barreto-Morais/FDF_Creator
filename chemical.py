@@ -50,6 +50,7 @@ def psml_find(fdf_file,dir):
     for element in elements:
 
         file_psml = os.path.join(dir_psml,f"{element}.psml")
-        
+        print("Arquivo PSML:", file_psml)
+        print("Arquivo existe?", os.path.isfile(file_psml))
         shutil.copy(file_psml, dir)
     return
