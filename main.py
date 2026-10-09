@@ -19,6 +19,7 @@ parser = arg.ArgumentParser(prog = "FDF_Creator", formatter_class = arg.RawDescr
 
 #######################################################################################################################################################################
 
+
 required = parser.add_argument_group("Required Configurations")
 
 required.add_argument("-l", dest = "label", type = str, required = True, help = "Label of file")
@@ -164,6 +165,7 @@ BandLinesScale ReciprocalLatticeVectors
 %block BandLines
 #k_point HSP_x HSP_y HSP_Z HSP_Symbol
 # Example: 1 0.000 0.000 0.000 G #(Gamma)
+
 %endblock BandLines
 
 #These block are related with the Density of States (DOS) and Projected Density of States (PDOS)
