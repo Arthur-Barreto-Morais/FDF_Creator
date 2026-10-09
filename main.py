@@ -5,36 +5,53 @@ Informações que devem ser modificadas no arquivo FDF:
 - num_species: Número de espécies químicas
 
 """
-import os
-import shutil
+
 import argparse as arg
 import periodictable
-import subprocess
 
-parser = arg.ArgumentParser()
-parser.add_argument("-l", dest = "label", type = str, required = True)
-parser.add_argument("-t", dest = "type", type = str, required = False, choices = ["opt","bands","phonons","dynamic"])
-parser.add_argument("-n", dest = "num_atoms", type = int, required = False)
-parser.add_argument("-el", dest = "elements", nargs ="+", required = False)
-parser.add_argument("-Fin", dest = "Fin", type = str, required = False, default = "Ang", choices = ["Ang", "Fractional"])
-parser.add_argument("-Fout", dest = "Fout", type = str, required = False, default = "Ang", choices = ["Ang", "Fractional"])
-parser.add_argument("-cm", dest = "cell_move", type = str, required = False, default = "True", choices = ["True", "False"])
-parser.add_argument("-bs", dest = "basis_size", type = str, required = False, default = "DZP")
-parser.add_argument("-mesh", dest = "mesh_cutoff", type = float, required = False, default = 400.0)
-parser.add_argument("-dc", dest = "dipole_correction", required = False, action = "store_true")
-parser.add_argument("-s", dest = "spin_type", type = str, required = False, default = "non-polarized", choices = ["non-polarized", "polarized"])
-parser.add_argument("-k", dest = "k_point", type = int, required = True)
-parser.add_argument("-scf", dest = "scf_crit", type = float, required = False, default = 0.000001)
-parser.add_argument("-run", dest = "run_type", type = str, required = False, default = "CG", choices = ["CG", "Broyden", "FIRE", "Verlet", "Nose", "FC"])
-parser.add_argument("-steps", dest = "steps", type = int, required = False, default = 500)
-parser.add_argument("-md", dest = "md_crit", type = float, required = False, default = 0.01)
-parser.add_argument("-d3", dest = "Grimme_D3", required = False, action = "store_true")
-parser.add_argument("-no_sv", dest = "save_dm", required = False, action = "store_false")
-parser.add_argument
-parser.add_argument
-parser.add_argument
-parser.add_argument
+parser = arg.ArgumentParser(prog = "FDF_Creator", formatter_class = arg.RawDescriptionHelpFormatter, description = "Program used to create FDF files for SIESTA code at several configurations", epilog= """Some Examples: 
+1: Run optimization with GrimmeD3 and Dipole Correction activated:
+    -l Label -k K_Point -t opt -d3 -dc
+    
+2: Run bands with spin polarized optmization:
+    -l Label -k K_Point -t band -s polarized
+    """)
 
+required = parser.add_argument_group("Required Configurations")
+
+required.add_argument("-l", dest = "label", type = str, required = True, help = "Label of file")
+required.add_argument("-k", dest = "k_point", type = int, required = True, help = "Quantity of K points in Monkhorst-Pack grid")
+
+input = parser.add_argument_group("Important Configurations")
+
+input.add_argument("-t", dest = "type", type = str, required = False, metavar = "TYPE", choices = ["opt","bands","phonons","dynamic"], help = "Some Pattern Configurations")
+input.add_argument("-n", dest = "num_atoms", type = int, required = False, help = "Number of Atoms")
+input.add_argument("-run", dest = "run_type", type = str, required = False, metavar = "RUN_TYPE", default = "CG", choices = ["CG", "Broyden", "FIRE", "Verlet", "Nose", "FC"], help = "Types of Run")
+input.add_argument("-el", dest = "elements", nargs ="+", required = False, metavar = "ELEMENT", help = "Elements (In order)")
+
+theoretical = parser.add_argument_group("Theoretical Configurations")
+
+theoretical.add_argument("-bs", dest = "basis_size", type = str, required = False, default = "DZP", help = "Basis Size")
+theoretical.add_argument("-s", dest = "spin_type", type = str, required = False, metavar = "SPIN_TYPE", default = "non-polarized", choices = ["non-polarized", "polarized"], help = "Type of Polarization")
+theoretical.add_argument("-mesh", dest = "mesh_cutoff", type = float, required = False, default = 400.0, help = "Mesh Cutoff Value (Ry)")
+theoretical.add_argument("-cm", dest = "cell_move", type = str, required = False, metavar = "CELL_MOVE", default = "True", choices = ["True", "False"], help = "Enable Cell Movement")
+
+stored = parser.add_argument_group("Stored Configurations")
+
+stored.add_argument("-d3", dest = "Grimme_D3", required = False, action = "store_true", help = "Enable Grimme D3(BJ) dispersion corrections")
+stored.add_argument("-no_sv", dest = "save_dm", required = False, action = "store_false", help = "Do not save density matrix")
+stored.add_argument("-dc", dest = "dipole_correction", required = False, action = "store_true", help = "Enable slab dipole correction")
+
+criteria = parser.add_argument_group("Criteria Configurations")
+
+criteria.add_argument("-scf", dest = "scf_crit", type = float, required = False, default = 0.000001, help = "Criteria of SCF")
+criteria.add_argument("-md", dest = "md_crit", type = float, required = False, default = 0.01, help = "Criteria of MD")
+
+simple = parser.add_argument_group("Simple Configurations")
+
+simple.add_argument("-Fin", dest = "Fin", type = str, required = False, metavar = "FORMAT IN", default = "Ang", choices = ["Ang", "Fractional"], help = "Input Coordinate Format")
+simple.add_argument("-Fout", dest = "Fout", type = str, required = False, metavar = "FORMAT OUT", default = "Ang", choices = ["Ang", "Fractional"], help = "Output Coordinate Format")
+simple.add_argument("-steps", dest = "steps", type = int, required = False, default = 500, help = "Number of Steps in MD")
 
 args = parser.parse_args()
 
@@ -97,7 +114,7 @@ AtomCoorFormatOut {format_out}
 AtomicCoordinatesOrigin 0.0 0.0 0.0
 
 #Type of movement for the unitary cell: True (Cell can move), False (Cell is fixed)
-MD.VariableCell {cell_move}
+MD.VariableCell {cell_move if not type == "bands" else "False"}
 
 #Pensar nesse
 MD.RelaxCellOnly false
@@ -119,7 +136,7 @@ LatticeConstant 1.00 Ang
 
 #Atomic coordinates, depends on the input format choice (Ang or Fractional)
 %block AtomicCoordinatesAndAtomicSpecies
-# Position_x Position_y Position_z Atomic_Index Atomic_Number Atomic_Symbol
+#Position_x Position_y Position_z Atomic_Index Atomic_Number Atomic_Symbol
 # Example: 0.000000 0.000000 0.000000 1 10 C
 
 %endblock AtomicCoordinatesAndAtomicSpecies
@@ -129,23 +146,29 @@ LatticeConstant 1.00 Ang
     if type == "bands":
         f.write(f"""####################Bands and DOS Informations####################
 
-#
+#Specifies the scale of the k vectors in the band lines
 BandLinesScale ReciprocalLatticeVectors
 
-#
+#High Simmetry Points/Path (HSP) for the bands calculations:
+#More informations about HSP can be found in the wikipedia
 %block BandLines
-#
-1    0.000 0.000 0.000 G
-200   0.000 0.500 0.000 M
-200   0.333 0.666 0.000 K
-200   0.000 0.000 0.000 G
+#k_point HSP_x HSP_y HSP_Z HSP_Symbol
+# Example: 1 0.000 0.000 0.000 G #(Gamma)
 %endblock BandLines
 
-#
+#These block are related with the Density of States (DOS) and Projected Density of States (PDOS)
 %block ProjectedDensityOfStates
-#
- -10.00 10.00 0.0500 10000 eV 
+#Min_Energy Max_Energy Broadening Num_Points Unit
+#We can start the line using EF (Fermi Energy) 
+# Example: EF -10.00 10.00 0.0500 10000 eV  
+
 %endblock ProjectedDensityOfStates
+
+#These block are related with the Local Density of States (LDOS)
+%block LocalDensityOfStates
+#Min_Energy Max_Energy Unit
+# Example: EF -2.0 2.0 eV
+%endblock LocalDensityOfStates
 
 ##################################################################"""+"\n"+"\n")
 
@@ -234,11 +257,11 @@ SCF.DM.Tolerance {scf_crit}
 
 #MD - Molecular Dynamics
 
-#
+#Choice of the type of calculation, see the manual for more information
 MD.TypeOfRun {run_type}
 
 #
-MD.Steps {steps}
+MD.Steps {steps if not type == "bands" else 0}
 MD.MaxDispl 0.1 Ang
 MD.MaxForceTol {md_crit} eV/Ang
 Target.Pressure 0 GPa
