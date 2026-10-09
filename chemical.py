@@ -25,7 +25,6 @@ def Obtain(fdf_file):
     return Species
 
 def psml_find(fdf_file,dir):
-    
     file_path = os.path.join(os.getcwd(), fdf_file)
     elements = []
 
@@ -34,6 +33,9 @@ def psml_find(fdf_file,dir):
     with open(file_path,"r") as f:
         line = f.read().strip().split("\n")
         for info in line:
+            if not info or info.startswith("#"):
+                continue
+
             if "%block ChemicalSpeciesLabel" in info:
                 in_block = True
                 continue
@@ -50,7 +52,5 @@ def psml_find(fdf_file,dir):
     for element in elements:
 
         file_psml = os.path.join(dir_psml,f"{element}.psml")
-        print("Arquivo PSML:", file_psml)
-        print("Arquivo existe?", os.path.isfile(file_psml))
         shutil.copy(file_psml, dir)
     return
