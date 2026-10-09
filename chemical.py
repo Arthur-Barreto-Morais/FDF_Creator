@@ -9,6 +9,9 @@ def Obtain(fdf_file):
         for line in f:
             line = line.strip()
 
+            if not line or line.startswith("#"):
+                continue
+            
             if line == "%block ChemicalSpeciesLabel":
                 in_block = True
                 continue
