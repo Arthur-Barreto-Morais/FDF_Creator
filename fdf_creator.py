@@ -256,7 +256,7 @@ SCF.Mixer.Kick.Weight 0.5
 
 #
 SCF.Mixer.Restart.Save 1
-SCF.Mixer.Linear.After 0
+SCF.Mixer.Linear.After -1
 SCF.Mixer.Linear.After.Weight 0.1
 
 #
