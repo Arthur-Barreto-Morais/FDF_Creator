@@ -195,7 +195,7 @@ BandLinesScale ReciprocalLatticeVectors
 
     dipole_correction = str(args.dipole_correction) if args.dipole_correction is not None else "False"
 
-    spin_type = "polarized" if args.spin_type == True else "non-polarized"
+    spin_type = "polarized" if args.spin_polarized == True else "non-polarized"
 
     k_point = args.k_point
     k_type = 0.5 if k_point % 2 == 0 else 0.0
