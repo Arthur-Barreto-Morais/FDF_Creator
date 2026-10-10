@@ -35,12 +35,12 @@ input.add_argument("-el", dest = "elements", nargs ="+", required = False, metav
 theoretical = parser.add_argument_group("Theoretical Configurations")
 
 theoretical.add_argument("-bs", dest = "basis_size", type = str, required = False, default = "DZP", help = "Basis Size - Defalt (DZP)")
-theoretical.add_argument("-s", dest = "spin_polarized", required = False, action = "store_true", help = "Enable spin polarized - Defalt (non-polarized)")
 theoretical.add_argument("-mesh", dest = "mesh_cutoff", type = float, required = False, default = 400.0, help = "Mesh Cutoff Value (Ry) - Defalt (400.0)")
-theoretical.add_argument("-cm", dest = "cell_fixed", type = str, required = False, metavar = "CELL_FIXED", default = "True", choices = ["True", "False"], help = "Enable Cell Fixed - Defalt (True) (MD.VariableCell True)")
 
 stored = parser.add_argument_group("Stored Configurations")
 
+stored.add_argument("-cm", dest = "cell_fixed", required = False, action = "store_true", help = "Enable Cell Fixed - Defalt (True) (MD.VariableCell True)")
+stored.add_argument("-s", dest = "spin_polarized", required = False, action = "store_true", help = "Enable spin polarized - Defalt (non-polarized)")
 stored.add_argument("-d3", dest = "Grimme_D3", required = False, action = "store_true", help = "Enable Grimme D3(BJ) dispersion corrections - Defalt (False)")
 stored.add_argument("-no_sv", dest = "no_save_dm", required = False, action = "store_false", help = "Do not use saved density matrix - Defalt (True) (DM.UseSaveDM True)")
 stored.add_argument("-xv", dest = "save_xv", required = False, action = "store_true", help = "Enable use saved XV file - Defalt (False) (MD.UseSaveXV False)")
@@ -53,8 +53,8 @@ criteria.add_argument("-md", dest = "md_crit", type = float, required = False, d
 
 simple = parser.add_argument_group("Simple Configurations")
 
-simple.add_argument("-Fin", dest = "Fin", type = str, required = False, metavar = "FORMAT IN", default = "Ang", choices = ["Ang", "Fractional"], help = "Input Coordinate Format - Defalt (Ang)")
-simple.add_argument("-Fout", dest = "Fout", type = str, required = False, metavar = "FORMAT OUT", default = "Ang", choices = ["Ang", "Fractional"], help = "Output Coordinate Format - Defalt (Ang)")
+simple.add_argument("-Fin", dest = "Fin", type = str, required = False, metavar = "FORMAT IN", default = "A", choices = ["A", "F"], help = "Input Coordinate Format - A = Ang, F = Fractional - Defalt (Ang)")
+simple.add_argument("-Fout", dest = "Fout", type = str, required = False, metavar = "FORMAT OUT", default = "A", choices = ["A", "F"], help = "Output Coordinate Format - A = Ang, F = Fractional - Defalt (Ang)")
 simple.add_argument("-steps", dest = "steps", type = int, required = False, default = 500, help = "Number of Steps in MD - Defalt (500)")
 
 dynamic = parser.add_argument_group("Dynamic Configurations")
@@ -110,8 +110,8 @@ NumberOfSpecies {num_species}
     
 ########################################################"""+"\n"+"\n")
 
-    format_in = args.Fin
-    format_out = args.Fout
+    format_in = "Fractional" if args.Fin == "F" else "Ang"
+    format_out = "Fractional" if args.Fout == "F" else "Ang"
 
     cell_fixed = args.cell_fixed
 
@@ -127,7 +127,7 @@ AtomCoorFormatOut {format_out}
 AtomicCoordinatesOrigin 0.0 0.0 0.0
 
 #Type of movement for the unitary cell: True (Cell can move), False (Cell is fixed)
-MD.VariableCell {cell_fixed if not type == "bands" or not type == "dynamic" else "False"}
+MD.VariableCell {"False" if type == "bands" or type == "dynamic" or cell_fixed == False else "True"}
 
 #Pensar nesse
 MD.RelaxCellOnly false
