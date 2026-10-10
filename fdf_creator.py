@@ -75,9 +75,9 @@ with open(fdf_file, 'w') as f:
     f.write(f"""####################Label of System#################### 
              
 SystemName {label_name}     
-SystemLabel {label_name}
+SystemLabel {label_name}"""+"\n"+"\n")
 
-#######################################################"""+"\n"+"\n")
+#######################################################
 
     num_atoms = args.num_atoms if args.num_atoms is not None else "num_atoms"
 
@@ -106,9 +106,9 @@ NumberOfSpecies {num_species}
 # Atomic_Symbol Polarization_Scheme
 # Example: Li non-perturbative
 
-#%endblock PAO.Polarization.Scheme
+#%endblock PAO.Polarization.Scheme"""+"\n"+"\n")
     
-########################################################"""+"\n"+"\n")
+########################################################
 
     format_in = "Fractional" if args.Fin == "F" else "Ang"
     format_out = "Fractional" if args.Fout == "F" else "Ang"
@@ -148,9 +148,9 @@ LatticeConstant 1.00 Ang
 #Position_x Position_y Position_z Atomic_Index Atomic_Number Atomic_Symbol
 # Example: 0.000000 0.000000 0.000000 1 10 C
 0.00 0.00 0.00 1
-%endblock AtomicCoordinatesAndAtomicSpecies
+%endblock AtomicCoordinatesAndAtomicSpecies"""+"\n"+"\n")
 
-###############################################################"""+"\n"+"\n")
+###############################################################
 
     if type == "bands":
         f.write(f"""####################Bands and DOS Informations####################
@@ -179,9 +179,9 @@ BandLinesScale ReciprocalLatticeVectors
 #Min_Energy Max_Energy Unit
 # Example: EF -2.0 2.0 eV
 
-%endblock LocalDensityOfStates
+%endblock LocalDensityOfStates"""+"\n"+"\n")
 
-##################################################################"""+"\n"+"\n")
+##################################################################
 
     basis_size = args.basis_size
 
@@ -221,9 +221,9 @@ Spin {spin_type}
 {k_point} 0 0 {k_type}   
 0 {k_point} 0 {k_type}   
 0 0 1 0.0   
-%endblock kgrid_Monkhorst_Pack  
+%endblock kgrid_Monkhorst_Pack"""+"\n"+"\n")
 
-################################################################"""+"\n"+"\n")
+################################################################
 
     scf_crit = args.scf_crit
 
@@ -245,11 +245,12 @@ SCF.Mixer.History 10
 SCF.Mixer.Restart 30
 SCF.Mixer.Kick 100
 SCF.Mixer.Kick.Weight 0.5
+SCF.Mixer.Restart.Save 4
 
 #Tolerance criteria of SCF cicle
-SCF.DM.Tolerance {scf_crit}
+SCF.DM.Tolerance {scf_crit}"""+"\n"+"\n")
 
-########################################################"""+"\n"+"\n")
+########################################################
 
     run_type = args.run_type
     steps = args.steps
@@ -272,10 +273,10 @@ MD.InitialTimeStep 1
 MD.LengthTimeStep 1.0 fs
 MD.InitialTemperature {temperature_initial} K
 MD.TargetTemperature {temperature_target} K
-MD.NoseMass 100 Ry*fs**2
+MD.NoseMass 100 Ry*fs**2"""+"\n"+"\n")   
 
 
-#######################################################"""+"\n"+"\n")        
+#######################################################     
     else:
         f.write(f"""####################MD Informations####################
 
@@ -288,9 +289,9 @@ MD.TypeOfRun {run_type}
 MD.Steps {steps if not type == "bands" else 0}
 MD.MaxDispl 0.1 Ang
 MD.MaxForceTol {md_crit} eV/Ang
-Target.Pressure 0 GPa
+Target.Pressure 0 GPa"""+"\n"+"\n")
 
-#######################################################"""+"\n"+"\n")
+#######################################################
 
     grimme = str(args.Grimme_D3) if args.Grimme_D3 is not None else "False"
 
@@ -298,10 +299,9 @@ Target.Pressure 0 GPa
 
 DFTD3 {grimme}
 DFTD3.UseXCDefaults {grimme}
-DFTD3.BJdamping {grimme}
+DFTD3.BJdamping {grimme}"""+"\n"+"\n")
 
-#DFTD3.Periodic ??????
-###############################################################"""+"\n"+"\n")
+###############################################################
 
     no_save_dm = str(args.no_save_dm) if args.no_save_dm is not None else "True"
     save_xv = str(args.save_xv) if args.save_xv is not None else "False"
@@ -312,9 +312,9 @@ DFTD3.BJdamping {grimme}
 MD.UseSaveXV {save_xv}
 
 #Enable use the {label_name}.DM file for re-run calculations
-DM.UseSaveDM {no_save_dm}
+DM.UseSaveDM {no_save_dm}"""+"\n"+"\n")
 
-###############################################################"""+"\n"+"\n")
+###############################################################
 
     f.write(f"""####################Write Output Informations####################
 
@@ -417,12 +417,10 @@ COOP.Write False
 #AnalyzeChargeDensityOnly
 #SaveInitialChargeDensity
 
-#Write.Denchar
+#Write.Denchar""")
 
 #################################################################
-    """)
-
-
+    
 #Para o futuro:
 #BANDAS and DOS
 #PHONONS
