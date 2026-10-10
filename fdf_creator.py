@@ -72,7 +72,7 @@ fdf_file = label_name + ".fdf"
 type = args.type
 
 with open(fdf_file, 'w') as f:
-    f.write(f"""####################Label of System#################### 
+    f.write(f"""############################################################Label of System############################################################ 
              
 SystemName {label_name}     
 SystemLabel {label_name}"""+"\n"+"\n")
@@ -91,7 +91,7 @@ SystemLabel {label_name}"""+"\n"+"\n")
         num_species = "num_species"
         species = "\n"
 
-    f.write(f"""####################Input Parameters####################        
+    f.write(f"""############################################################Input Parameters############################################################        
 
 NumberOfAtoms {num_atoms}
 NumberOfSpecies {num_species}
@@ -115,7 +115,7 @@ NumberOfSpecies {num_species}
 
     cell_fixed = args.cell_fixed
 
-    f.write(f"""####################Structural Informations####################
+    f.write(f"""############################################################Structural Informations############################################################
 
 #Format of the atomic coordinates input: Ang (Angstroms), Fractional (Fractional coordinates)
 AtomicCoordinatesFormat {format_in}
@@ -153,7 +153,7 @@ LatticeConstant 1.00 Ang
 ###############################################################
 
     if type == "bands":
-        f.write(f"""####################Bands and DOS Informations####################
+        f.write(f"""############################################################Bands and DOS Informations############################################################
 
 #Specifies the scale of the k vectors in the band lines
 BandLinesScale ReciprocalLatticeVectors
@@ -194,7 +194,7 @@ BandLinesScale ReciprocalLatticeVectors
     k_point = args.k_point
     k_type = 0.5 if k_point % 2 == 0 else 0.0
 
-    f.write(f"""####################Theoretical Informations####################
+    f.write(f"""############################################################Theoretical Informations############################################################
 
 #Exchange-Correlation functional
 XC.Functional GGA 
@@ -227,7 +227,7 @@ Spin {spin_type}
 
     scf_crit = args.scf_crit
 
-    f.write(f"""####################SCF Informations####################
+    f.write(f"""############################################################SCF Informations############################################################
 
 #All Self Consistent Field (SCF) parameters can be found in the manual, but this configuration is a good estimate for most systems.
 
@@ -260,7 +260,7 @@ SCF.DM.Tolerance {scf_crit}"""+"\n"+"\n")
 
     if type == "dynamic":
         run_type = "Nose"
-        f.write(f"""####################MD Informations####################
+        f.write(f"""############################################################MD Informations############################################################
 
 #MD - Molecular Dynamics
 
@@ -278,24 +278,27 @@ MD.NoseMass 100 Ry*fs**2"""+"\n"+"\n")
 
 #######################################################     
     else:
-        f.write(f"""####################MD Informations####################
+        f.write(f"""############################################################MD Informations############################################################
 
 #MD - Molecular Dynamics
 
 #Choice of the type of calculation, see the manual for more information
 MD.TypeOfRun {run_type}
 
-#
+#Max atomic optimization step
 MD.Steps {steps if not type == "bands" else 0}
+
+#Max atomic displacements in an optimization step
 MD.MaxDispl 0.1 Ang
-MD.MaxForceTol {md_crit} eV/Ang
-Target.Pressure 0 GPa"""+"\n"+"\n")
+
+#Force tolerance criteria in coordinate optimization
+MD.MaxForceTol {md_crit} eV/Ang"""+"\n"+"\n")
 
 #######################################################
 
     grimme = str(args.Grimme_D3) if args.Grimme_D3 is not None else "False"
 
-    f.write(f"""####################Grimmes-D3 Informations####################
+    f.write(f"""############################################################Grimmes-D3 Informations############################################################
 
 DFTD3 {grimme}
 DFTD3.UseXCDefaults {grimme}
@@ -306,7 +309,7 @@ DFTD3.BJdamping {grimme}"""+"\n"+"\n")
     no_save_dm = str(args.no_save_dm) if args.no_save_dm is not None else "True"
     save_xv = str(args.save_xv) if args.save_xv is not None else "False"
 
-    f.write(f"""####################Re-Run Output Informations####################
+    f.write(f"""############################################################Re-Run Output Informations############################################################
 
 #Enable use the {label_name}.XV file for re-run calculations
 MD.UseSaveXV {save_xv}
@@ -316,14 +319,14 @@ DM.UseSaveDM {no_save_dm}"""+"\n"+"\n")
 
 ###############################################################
 
-    f.write(f"""####################Write Output Informations####################
+    f.write(f"""############################################################Write Output Informations############################################################
 
 #All informations about the output can be obtained in the manual.
 
 #Increase the output informations
 LongOutput True
 
-------------------------Structure and Coordinates------------------------
+------------------------------------------------Structure and Coordinates------------------------------------------------
 
 #Write the {label_name}.xyz file
 WriteCoor.Xmol True
@@ -344,7 +347,7 @@ WriteCoorStep True
 # {label_name}.MD and {label_name}.MDE files
 WriteMDHistory {"True" if type == "opt" or type == "dynamic" else "False"}
 
-------------------------Forces and Orbitals------------------------
+------------------------------------------------Forces and Orbitals------------------------------------------------
 
 #Write the atomic forces, {label_name}.FA file
 WriteForces True
@@ -355,7 +358,7 @@ Write.OrbitalIndex False
 #Write some orbital informations in the output file
 WriteOrbMom False
 
-------------------------Hamiltonian and Density Matrix (DM)------------------------
+------------------------------------------------Hamiltonian and Density Matrix (DM)------------------------------------------------
 
 #Write the DM, {label_name}.DM file
 Write.DM True
@@ -363,7 +366,7 @@ Write.DM True
 #Write the Hamiltonian and Overlap Matrices (HS), {label_name}.HSX file - Must be true for Bands and DOS calculations?
 SaveHS {"True" if type == "bands" else "False"}
 
-------------------------Eigenvalues, Bands and Wavefunctions------------------------
+------------------------------------------------Eigenvalues, Bands and Wavefunctions------------------------------------------------
 
 #Write the Hamiltonian bands eigenvalues, {label_name}.bands file - Must be true for Bands calculations
 WriteBands {"True" if type == "bands" else "False"}
@@ -379,7 +382,8 @@ WriteKpoints false
 
 #Write the Kpoints related to the bands calculation in the output file.
 WriteKBands false
-------------------------Electronic Populations------------------------
+
+------------------------------------------------Electronic Populations------------------------------------------------
 
 #Write Mulliken population, values can be 0, 1, 2 or 3 (see manual)
 WriteMullikenPop 1
@@ -394,7 +398,7 @@ Write.VoronoiPop True
 #{label_name}.fullBZ.WFSX and {label_name}.HSX files
 COOP.Write False
 
-------------------------Others Write Options------------------------
+------------------------------------------------Others Write Options------------------------------------------------
 
 #Write.Graphviz
 #Write.DM.end.of.cycle
