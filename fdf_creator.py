@@ -27,24 +27,24 @@ required.add_argument("-k", dest = "k_point", type = int, required = True, help 
 
 input = parser.add_argument_group("Important Configurations")
 
-input.add_argument("-t", dest = "type", type = str, required = False, metavar = "TYPE", choices = ["opt","bands","phonons","dynamic"], help = "Some Pattern Configurations")
+input.add_argument("-t", dest = "type", type = str, required = False, metavar = "TYPE", choices = ["opt","bands","phonons","dynamic"], help = "Some Pattern Configurations [opt, bands, dynamic]")
 input.add_argument("-n", dest = "num_atoms", type = int, required = False, help = "Number of Atoms")
-input.add_argument("-run", dest = "run_type", type = str, required = False, metavar = "RUN_TYPE", default = "CG", choices = ["CG", "Broyden", "FIRE", "Nose", "FC"], help = "Types of Run - Defalt (CG)")
+input.add_argument("-run", dest = "run_type", type = str, required = False, metavar = "RUN_TYPE", default = "CG", choices = ["CG", "Broyden", "FIRE", "Nose", "FC"], help = "Types of Run - Defalt (CG) - [CG, Broyden, FIRE, Nose, FC]")
 input.add_argument("-el", dest = "elements", nargs ="+", required = False, metavar = "ELEMENT", help = "Elements (In order)")
 
 theoretical = parser.add_argument_group("Theoretical Configurations")
 
 theoretical.add_argument("-bs", dest = "basis_size", type = str, required = False, default = "DZP", help = "Basis Size - Defalt (DZP)")
-theoretical.add_argument("-s", dest = "spin_type", type = str, required = False, metavar = "SPIN_TYPE", default = "non-polarized", choices = ["non-polarized", "polarized"], help = "Type of Polarization - Defalt (non-polarized)")
+theoretical.add_argument("-s", dest = "spin_polarized", required = False, action = "store_true", help = "Enable spin polarized - Defalt (non-polarized)")
 theoretical.add_argument("-mesh", dest = "mesh_cutoff", type = float, required = False, default = 400.0, help = "Mesh Cutoff Value (Ry) - Defalt (400.0)")
-theoretical.add_argument("-cm", dest = "cell_move", type = str, required = False, metavar = "CELL_MOVE", default = "True", choices = ["True", "False"], help = "Enable Cell Movement - Defalt (True)")
+theoretical.add_argument("-cm", dest = "cell_fixed", type = str, required = False, metavar = "CELL_FIXED", default = "True", choices = ["True", "False"], help = "Enable Cell Fixed - Defalt (True) (MD.VariableCell True)")
 
 stored = parser.add_argument_group("Stored Configurations")
 
 stored.add_argument("-d3", dest = "Grimme_D3", required = False, action = "store_true", help = "Enable Grimme D3(BJ) dispersion corrections - Defalt (False)")
-stored.add_argument("-no_sv", dest = "save_dm", required = False, action = "store_false", help = "Do not use saved density matrix - Defalt (True) (DM.UseSaveDM True)")
+stored.add_argument("-no_sv", dest = "no_save_dm", required = False, action = "store_false", help = "Do not use saved density matrix - Defalt (True) (DM.UseSaveDM True)")
 stored.add_argument("-xv", dest = "save_xv", required = False, action = "store_true", help = "Enable use saved XV file - Defalt (False) (MD.UseSaveXV False)")
-stored.add_argument("-dc", dest = "dipole_correction", required = False, action = "store_true", help = "Enable slab dipole correction - Defalt (False)")
+stored.add_argument("-dc", dest = "dipole_correction", required = False, action = "store_true", help = "Enable slab dipole correction - Defalt (False) (Slab.DipoleCorrection False)")
 
 criteria = parser.add_argument_group("Criteria Configurations")
 
@@ -113,7 +113,7 @@ NumberOfSpecies {num_species}
     format_in = args.Fin
     format_out = args.Fout
 
-    cell_move = args.cell_move
+    cell_fixed = args.cell_fixed
 
     f.write(f"""####################Structural Informations####################
 
@@ -127,7 +127,7 @@ AtomCoorFormatOut {format_out}
 AtomicCoordinatesOrigin 0.0 0.0 0.0
 
 #Type of movement for the unitary cell: True (Cell can move), False (Cell is fixed)
-MD.VariableCell {cell_move if not type == "bands" or not type == "dynamic" else "False"}
+MD.VariableCell {cell_fixed if not type == "bands" or not type == "dynamic" else "False"}
 
 #Pensar nesse
 MD.RelaxCellOnly false
@@ -144,14 +144,16 @@ MD.RelaxCellOnly false
 #Cell vectors of the system
 LatticeConstant 1.00 Ang
 %block LatticeVectors
-
+0.00 0.00 0.00
+0.00 0.00 0.00
+0.00 0.00 0.00
 %endblock LatticeVectors
 
 #Atomic coordinates, depends on the input format choice (Ang or Fractional)
 %block AtomicCoordinatesAndAtomicSpecies
 #Position_x Position_y Position_z Atomic_Index Atomic_Number Atomic_Symbol
 # Example: 0.000000 0.000000 0.000000 1 10 C
-
+0.00 0.00 0.00 1
 %endblock AtomicCoordinatesAndAtomicSpecies
 
 ###############################################################"""+"\n"+"\n")
@@ -193,7 +195,7 @@ BandLinesScale ReciprocalLatticeVectors
 
     dipole_correction = str(args.dipole_correction) if args.dipole_correction is not None else "False"
 
-    spin_type = args.spin_type
+    spin_type = "polarized" if args.spin_type == True else "non-polarized"
 
     k_point = args.k_point
     k_type = 0.5 if k_point % 2 == 0 else 0.0
@@ -316,7 +318,7 @@ DFTD3.BJdamping {grimme}
 #DFTD3.Periodic ??????
 ###############################################################"""+"\n"+"\n")
 
-    save_dm = str(args.save_dm) if args.save_dm is not None else "True"
+    no_save_dm = str(args.no_save_dm) if args.no_save_dm is not None else "True"
     save_xv = str(args.save_xv) if args.save_xv is not None else "False"
 
     f.write(f"""####################Re-Run Output Informations####################
@@ -325,7 +327,7 @@ DFTD3.BJdamping {grimme}
 MD.UseSaveXV {save_xv}
 
 #
-DM.UseSaveDM {save_dm}
+DM.UseSaveDM {no_save_dm}
 
 #
 MD.UseSaveCG false
