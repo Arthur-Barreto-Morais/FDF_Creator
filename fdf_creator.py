@@ -114,7 +114,7 @@ NumberOfSpecies {num_species}
     format_out = "Fractional" if args.Fout == "F" else "Ang"
 
     cell_fixed = args.cell_fixed
-
+    print(cell_fixed)
     f.write(f"""####################Structural Informations####################
 
 #Format of the atomic coordinates input: Ang (Angstroms), Fractional (Fractional coordinates)
