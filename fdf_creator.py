@@ -123,21 +123,15 @@ AtomicCoordinatesFormat {format_in}
 #Format of the atomic coordinates output: Ang (Angstroms), Fractional (Fractional coordinates)
 AtomCoorFormatOut {format_out}
 
-#Atomic origin of the system.
-AtomicCoordinatesOrigin 0.0 0.0 0.0
-
 #Type of movement for the unitary cell: True (Cell can move), False (Cell is fixed)
 MD.VariableCell {"False" if type == "bands" or type == "dynamic" or cell_fixed == False else "True"}
 
-#Pensar nesse
-MD.RelaxCellOnly false
-
 #Constrain atoms or/and cell-vectors:
 %block Geometry.Constraints
-# Examples
+# Examples:
 # 1- Constrain all Carbon atoms: Z 6
 # 2- Constrain the cell-vector c: cell-vector c
-# 3- Constrain the movement of one atom in the z-direction: atom 1 0. 0. 1.
+# 3- Constrain the movement of one atom in the xy-plane (Z-fixed): atom 1 0. 0. 1.
 
 %endblock Geometry.Constraints
 
@@ -235,33 +229,24 @@ Spin {spin_type}
 
     f.write(f"""####################SCF Informations####################
 
-#SCF - Self Consistent Field
-
-#All SCF parameters can be found in the manual, but this configuration is a good estimate for most systems.
+#All Self Consistent Field (SCF) parameters can be found in the manual, but this configuration is a good estimate for most systems.
 
 #
 SolutionMethod diagon
 SCF.Mixer.Method pulay
-OccupationFunction FD
 ElectronicTemperature 300 K
 
-#
-MinSCFIterations 0
+#Max value for the SCF cicle
 MaxSCFIterations 1000
 
-#
+#Mixer informations. Switch this values for non-converged systems
 SCF.Mixer.Weight 0.25
 SCF.Mixer.History 10
 SCF.Mixer.Restart 30
 SCF.Mixer.Kick 100
 SCF.Mixer.Kick.Weight 0.5
 
-#
-SCF.Mixer.Restart.Save 1
-SCF.Mixer.Linear.After -1
-SCF.Mixer.Linear.After.Weight 0.1
-
-#
+#Tolerance criteria of SCF cicle
 SCF.DM.Tolerance {scf_crit}
 
 ########################################################"""+"\n"+"\n")
@@ -283,7 +268,7 @@ MD.TypeOfRun {run_type}
 
 #
 MD.Steps {10000 if args.steps is not None else steps}
-MD.InitialTimeStep
+MD.InitialTimeStep 1
 MD.LengthTimeStep 1.0 fs
 MD.InitialTemperature {temperature_initial} K
 MD.TargetTemperature {temperature_target} K
@@ -323,17 +308,11 @@ DFTD3.BJdamping {grimme}
 
     f.write(f"""####################Re-Run Output Informations####################
 
-#
+#Enable use the {label_name}.XV file for re-run calculations
 MD.UseSaveXV {save_xv}
 
-#
+#Enable use the {label_name}.DM file for re-run calculations
 DM.UseSaveDM {no_save_dm}
-
-#
-MD.UseSaveCG false
-
-#
-UseSaveData false
 
 ###############################################################"""+"\n"+"\n")
 
