@@ -37,12 +37,12 @@ theoretical = parser.add_argument_group("Theoretical Configurations")
 theoretical.add_argument("-bs", dest = "basis_size", type = str, required = False, default = "DZP", help = "Basis Size - Defalt (DZP)")
 theoretical.add_argument("-mesh", dest = "mesh_cutoff", type = float, required = False, default = 400.0, help = "Mesh Cutoff Value (Ry) - Defalt (400.0)")
 
-stored = parser.add_argument_group("Stored Configurations")
+stored = parser.add_argument_group("Stored Configurations - Add this informations switch the Default (True -> False or False -> True)")
 
 stored.add_argument("-cm", dest = "cell_fixed", required = False, action = "store_false", help = "Enable Cell Fixed - Defalt (True) (MD.VariableCell True)")
 stored.add_argument("-s", dest = "spin_polarized", required = False, action = "store_true", help = "Enable spin polarized - Defalt (non-polarized)")
 stored.add_argument("-d3", dest = "Grimme_D3", required = False, action = "store_true", help = "Enable Grimme D3(BJ) dispersion corrections - Defalt (False)")
-stored.add_argument("-no_sv", dest = "no_save_dm", required = False, action = "store_false", help = "Do not use saved density matrix - Defalt (True) (DM.UseSaveDM True)")
+stored.add_argument("-sv", dest = "no_save_dm", required = False, action = "store_false", help = "Do not use saved density matrix - Defalt (True) (DM.UseSaveDM True)")
 stored.add_argument("-xv", dest = "save_xv", required = False, action = "store_true", help = "Enable use saved XV file - Defalt (False) (MD.UseSaveXV False)")
 stored.add_argument("-dc", dest = "dipole_correction", required = False, action = "store_true", help = "Enable slab dipole correction - Defalt (False) (Slab.DipoleCorrection False)")
 
