@@ -39,7 +39,7 @@ theoretical.add_argument("-mesh", dest = "mesh_cutoff", type = float, required =
 
 stored = parser.add_argument_group("Stored Configurations")
 
-stored.add_argument("-cm", dest = "cell_fixed", required = False, action = "store_true", help = "Enable Cell Fixed - Defalt (True) (MD.VariableCell True)")
+stored.add_argument("-cm", dest = "cell_fixed", required = False, action = "store_false", help = "Enable Cell Fixed - Defalt (True) (MD.VariableCell True)")
 stored.add_argument("-s", dest = "spin_polarized", required = False, action = "store_true", help = "Enable spin polarized - Defalt (non-polarized)")
 stored.add_argument("-d3", dest = "Grimme_D3", required = False, action = "store_true", help = "Enable Grimme D3(BJ) dispersion corrections - Defalt (False)")
 stored.add_argument("-no_sv", dest = "no_save_dm", required = False, action = "store_false", help = "Do not use saved density matrix - Defalt (True) (DM.UseSaveDM True)")
